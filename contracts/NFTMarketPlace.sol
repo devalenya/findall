@@ -6,9 +6,11 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 
 contract NFTMarketPlace is ReentrancyGuard {
-    
+    using SafeMath for uint256;
    
-    uint256 public marketFees = 1 ether;
+    uint256 public marketFees = 0.00001000 ether;
+    uint256 public constant maxMint = 1;
+    uint256 public MAX_TOKENS = 600;
     address payable owner;
 
       using Counters for Counters.Counter;
@@ -51,11 +53,29 @@ contract NFTMarketPlace is ReentrancyGuard {
 ///////////////////////////////////
      mapping(uint256=>NftMerketItem) private idForMarketItem;
 ///////////////////////////////////
-    function createItemForSale(uint256 _mintAmount,address nftContract,uint256 tokenId,uint256 price)public payable nonReentrant {
-        require(price >600,"Price should be moreThan 1");
+    function createItemForSale(,address nftContract,uint256 tokenId,uint256 price)public payable nonReentrant {
+        require(price >0,"Price should be moreThan 1");
         require(tokenId >0,"token Id should be moreThan 1");
-        require(msg.value == marketFees,"The Market Fees is 6000 ckb");
-        require(nftContract != address(0),"address should be equal ckb");
+        require(msg.value == marketFees,"The Market Fees is 1 BNB");
+        require(nftContract != address(0),"address should be a BNB address");
+        //Check that the number of tokens requested doesn't exceed the max. allowed.
+        require(tokenId <= maxMint, "You can only mint 1 tokens at a time");
+        //Check that the number of tokens requested wouldn't exceed what's left.
+        require(totalSupply().add(tokenId) <= MAX_TOKENS, "Minting would exceed max. supply");
+        //Check that the right amount of Ether was sent.
+        require(marketFees.mul(tokenId) <= msg.value, "Not enough BNB sent.");
+        // For each token requested, mint one.
+        for(uint256 i = 0; i < tokenId; i++) {
+            uint256 createItemForSaleIndex = totalSupply();
+            if(createItemForSaleIndex < MAX_TOKENS) {
+                /** 
+                 * Mint token using inherited ERC721 function
+                 * msg.sender is the wallet address of mint requester
+                 * mintIndex is used for the tokenId (must be unique)
+                 */
+                _safeMint(msg.sender, createItemForSaleIndex);
+            }
+        }
         itemId.increment();
         uint256 id = itemId.current();
 
