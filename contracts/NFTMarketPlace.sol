@@ -2,6 +2,7 @@ pragma solidity >=0.4.22 <0.9.0;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 
 
@@ -12,6 +13,7 @@ contract NFTMarketPlace is ReentrancyGuard {
     uint256 public constant maxMint = 1;
     uint256 public MAX_TOKENS = 600;
     address payable owner;
+    uint256 public totalSupply = 0;
 
       using Counters for Counters.Counter;
      Counters.Counter private itemId;
@@ -61,21 +63,10 @@ contract NFTMarketPlace is ReentrancyGuard {
         //Check that the number of tokens requested doesn't exceed the max. allowed.
         require(tokenId <= maxMint, "You can only mint 1 tokens at a time");
         //Check that the number of tokens requested wouldn't exceed what's left.
-        require(totalSupply().add(tokenId) <= MAX_TOKENS, "Minting would exceed max. supply");
+        require(totalSupply.add(tokenId) <= MAX_TOKENS, "Minting would exceed max. supply");
         //Check that the right amount of Ether was sent.
         require(marketFees.mul(tokenId) <= msg.value, "Not enough BNB sent.");
-        // For each token requested, mint one.
-        for(uint256 i = 0; i < tokenId; i++) {
-            uint256 createItemForSaleIndex = totalSupply();
-            if(createItemForSaleIndex < MAX_TOKENS) {
-                /** 
-                 * Mint token using inherited ERC721 function
-                 * msg.sender is the wallet address of mint requester
-                 * mintIndex is used for the tokenId (must be unique)
-                 */
-                _safeMint(msg.sender, createItemForSaleIndex);
-            }
-        }
+        
         itemId.increment();
         uint256 id = itemId.current();
 
