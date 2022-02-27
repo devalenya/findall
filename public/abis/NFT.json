@@ -27,7 +27,7 @@
           "name": "approved",
           "type": "address"
         },
-        {
+        { 
           "indexed": true,
           "internalType": "uint256",
           "name": "tokenId",
@@ -17952,16 +17952,12 @@
   "networks": {
     
    
-    
-
-"97": {
+    "97": {
       "events": {},
       "links": {},
-      "address": "0x8aBd03845e9e5424a8dC363062167dF996250327",
-      "transactionHash": "0x834739f745b19ceb410374a225055309f026033a13827c290f6f6546580e6920"
+      "address": "0x9f67f7ff7efE78E6C6dA997e2436227540EE195E",
+      "transactionHash": "0xd52888a63681e108dede69c17bb475d9b3aa791e9d2b1d06ac2171a2560f4d70"
     },
-
-
 
 
     "5777": {
